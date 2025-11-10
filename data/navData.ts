@@ -3,26 +3,32 @@ import { NavFoot } from "@/types/navFoot";
 export const NavFootData: NavFoot[] = [
     {
         name:"Dashboard",
-        href:"/dashbaord"
+        href:"/dashbaord",
+        class:"fa-solid fa-rectangle-list"
     },
     {
         name:"Users",
-        href:"/users"
+        href:"/users",
+        class:"fa-solid fa-user"
     },
     {
         name:"Groups",
-        href:"/groups"
+        href:"/groups",
+        class:"fa-solid fa-user-group"
     },
     {
         name:"Server Resource",
-        href:"/sever-resource"
+        href:"/sever-resource",
+        class:"fa-solid fa-server"
     },
     {
         name:"Notification",
-        href:"/notification"
+        href:"/notification",
+        class:"fa-solid fa-bell"
     },
     {
         name:"Remote Server",
-        href:"remote-server"
+        href:"remote-server",
+        class:"fa-solid fa-computer-mouse"
     }
 ]
