@@ -86,12 +86,12 @@ export default function Footer() {
             <ul className="flex flex-col sm:flex-row items-center gap-5 sm:gap-12">
               {NavFootData.map((items, index) => (
                 <li key={index}>
-                  <a
-                    href="jaascript:;"
+                  <Link
+                    href={items.href}
                     className="text-lg font-normal text-[#F7F7F7] transition-all duration-300 hover:text-white focus-within:text-white focus-within:outline-0"
                   >
-                    <Link href={items.href}>{items.name}</Link>
-                  </a>
+                    {items.name}
+                  </Link>
                 </li>
               ))}
             </ul>

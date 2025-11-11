@@ -19,14 +19,13 @@ export default function Navbar() {
         <nav className="md:w-80 bg-[#0C2B4E]">
           <div className="space-y-2 py-4 px-4">
             {NavFootData.map((items, index) => (
-              <a
+              <Link href={items.href}
                 key={index}
-                href="#"
                 className="flex items-center px-4 py-3 text-[#F7F7F7] hover:bg-[#0b223c] focus-within:bg-[#0b223c] hover:text-white rounded-lg transition-colors group"
               >
                 <i className={`${items.class} mr-3 text-[#F7F7F7] group-hover:text-white`}></i>
-                <Link href={items.href}>{items.name}</Link>
-              </a>
+                {items.name}
+              </Link>
             ))}
           </div>
         </nav>
