@@ -88,7 +88,7 @@ export default function Footer() {
                 <li key={index}>
                   <Link
                     href={items.href}
-                    className="text-lg font-normal text-[#F7F7F7] transition-all duration-300 hover:text-white focus-within:text-white focus-within:outline-0"
+                    className="text-lg font-normal text-[#F7F7F7] transition-all duration-300 hover:text-gray-400 focus-within:text-white focus-within:outline-0"
                   >
                     {items.name}
                   </Link>
@@ -101,7 +101,7 @@ export default function Footer() {
               <li>
                 <a
                   href="jaascript:;"
-                  className="text-sm font-normal text-[#F7F7F7] transition-all duration-300 hover:text-white focus-within:text-white focus-within:outline-0"
+                  className="text-sm font-normal text-[#F7F7F7] transition-all duration-300 hover:text-gray-400 focus-within:text-white focus-within:outline-0"
                 >
                   Terms
                 </a>
@@ -109,7 +109,7 @@ export default function Footer() {
               <li>
                 <a
                   href="jaascript:;"
-                  className="text-sm font-normal text-[#F7F7F7] transition-all duration-300 hover:text-white focus-within:text-white focus-within:outline-0"
+                  className="text-sm font-normal text-[#F7F7F7] transition-all duration-300 hover:text-gray-400 focus-within:text-white focus-within:outline-0"
                 >
                   Privacy
                 </a>
@@ -117,7 +117,7 @@ export default function Footer() {
               <li>
                 <a
                   href="jaascript:;"
-                  className="text-sm font-normal text-[#F7F7F7] transition-all duration-300 hover:text-white focus-within:text-white focus-within:outline-0"
+                  className="text-sm font-normal text-[#F7F7F7] transition-all duration-300 hover:text-gray-400 focus-within:text-white focus-within:outline-0"
                 >
                   Cookies
                 </a>
@@ -126,7 +126,7 @@ export default function Footer() {
             <div className="flex items-center gap-4">
               <a
                 href="javascript:;"
-                className="border border-gray-300 p-2 rounded-full aspect-square text-[#F7F7F7] transition-all duration-500 hover:text-white hover:border-indigo-600 focus-within:outline-0 focus-within:text-white focus-within:border-indigo-600"
+                className="border border-gray-300 p-2 rounded-full aspect-square text-[#F7F7F7] transition-all duration-500 hover:text-gray-400 hover:border-indigo-600 focus-within:outline-0 focus-within:text-white focus-within:border-indigo-600"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -143,7 +143,7 @@ export default function Footer() {
               </a>
               <a
                 href="javascript:;"
-                className="border border-gray-300 p-2 rounded-full aspect-square text-[#F7F7F7] transition-all duration-500 hover:text-white hover:border-indigo-600 focus-within:outline-0 focus-within:text-white focus-within:border-indigo-600"
+                className="border border-gray-300 p-2 rounded-full aspect-square text-[#F7F7F7] transition-all duration-500 hover:text-gray-400 hover:border-indigo-600 focus-within:outline-0 focus-within:text-white focus-within:border-indigo-600"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -160,7 +160,7 @@ export default function Footer() {
               </a>
               <a
                 href="javascript:;"
-                className="border border-gray-300 p-2 rounded-full aspect-square text-[#F7F7F7] transition-all duration-500 hover:text-white hover:border-indigo-600 focus-within:outline-0 focus-within:text-white focus-within:border-indigo-600"
+                className="border border-gray-300 p-2 rounded-full aspect-square text-[#F7F7F7] transition-all duration-500 hover:text-gray-400 hover:border-indigo-600 focus-within:outline-0 focus-within:text-white focus-within:border-indigo-600"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -177,7 +177,7 @@ export default function Footer() {
               </a>
               <a
                 href="javascript:;"
-                className="border border-gray-300 p-2 rounded-full aspect-square text-[#F7F7F7] transition-all duration-500 hover:text-white hover:border-indigo-600 focus-within:outline-0 focus-within:text-white focus-within:border-indigo-600"
+                className="border border-gray-300 p-2 rounded-full aspect-square text-[#F7F7F7] transition-all duration-500 hover:text-gray-400 hover:border-indigo-600 focus-within:outline-0 focus-within:text-white focus-within:border-indigo-600"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
