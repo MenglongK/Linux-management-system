@@ -4,12 +4,12 @@ import Image from "next/image";
 export default function Navbar() {
   return (
     <>
-      <div className="bg-[#0b223c] md:w-80 position-static">
+      <div className="bg-[#0b223c] md:w-80 h-full position-static">
         <div className="inset-y-0 left-0 md:w-80 bg-[#0b223c] shadow-2xl z-50">
           <div className="flex items-center justify-center h-20 bg-cordes-blue">
             <div className="flex items-center space-x-3">
               <span className="text-[#F7F7F7] text-xl font-bold">
-                <i className="fa-solid fa-people-roof mr-3"></i>
+                <i className="fa-solid fa-user-shield mr-3"></i>
                 System Management
               </span>
             </div>
