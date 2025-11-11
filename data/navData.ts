@@ -3,7 +3,7 @@ import { NavFoot } from "@/types/navFoot";
 export const NavFootData: NavFoot[] = [
     {
         name: "Server Resource",
-        href: "/sever-resource",
+        href: "/resource",
         class: "fa-solid fa-server"
     },
     {
@@ -23,7 +23,7 @@ export const NavFootData: NavFoot[] = [
     },
     {
         name: "Remote Server",
-        href: "remote-server",
+        href: "/remote-server",
         class: "fa-solid fa-computer-mouse"
     }
 ]

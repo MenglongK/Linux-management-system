@@ -1,5 +1,6 @@
 import { NavFootData } from "@/data/navData";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Navbar() {
   return (
@@ -24,7 +25,7 @@ export default function Navbar() {
                 className="flex items-center px-4 py-3 text-[#F7F7F7] hover:bg-[#0b223c] focus-within:bg-[#0b223c] hover:text-white rounded-lg transition-colors group"
               >
                 <i className={`${items.class} mr-3 text-[#F7F7F7] group-hover:text-white`}></i>
-                {items.name}
+                <Link href={items.href}>{items.name}</Link>
               </a>
             ))}
           </div>

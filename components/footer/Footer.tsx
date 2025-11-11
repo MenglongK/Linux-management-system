@@ -1,4 +1,5 @@
 import { NavFootData } from "@/data/navData";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -89,7 +90,7 @@ export default function Footer() {
                     href="jaascript:;"
                     className="text-lg font-normal text-[#F7F7F7] transition-all duration-300 hover:text-white focus-within:text-white focus-within:outline-0"
                   >
-                    {items.name}
+                    <Link href={items.href}>{items.name}</Link>
                   </a>
                 </li>
               ))}
