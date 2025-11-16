@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import { Inter, Kantumruy_Pro } from "next/font/google";
-// @ts-expect-error: remove error on global css
 import "./globals.css";
-import Navbar from "@/components/navbar/Navbar";
-import Footer from "@/components/footer/Footer";
 import { Suspense } from "react";
 import Loading from "./loading";
+import { MainLayout } from "@/components/main-layout/MainLayout";
 
 const kantumruyPro = Kantumruy_Pro({
   variable: "--font-kh",
@@ -39,9 +37,9 @@ export default function RootLayout({
         className={`${kantumruyPro.variable} ${inter.variable} antialiased`}
       >
         <div className="font-en">
-          <Navbar />
-          <Suspense fallback={<Loading />}>{children}</Suspense>
-          <Footer />
+          <MainLayout>
+            <Suspense fallback={<Loading />}>{children}</Suspense>
+          </MainLayout>
         </div>
       </body>
     </html>

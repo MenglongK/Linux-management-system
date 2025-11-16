@@ -1,29 +1,30 @@
 import { NavFoot } from "@/types/navFoot";
+import { Bell, LayoutDashboard, Network, Users, Wifi } from "lucide-react";
 
 export const NavFootData: NavFoot[] = [
     {
         name: "Server Resource",
         href: "/resource",
-        class: "fa-solid fa-server"
+        icon: LayoutDashboard
     },
     {
         name: "Users",
         href: "/users",
-        class: "fa-solid fa-user"
+        icon: Users
     },
     {
         name: "Groups",
         href: "/groups",
-        class: "fa-solid fa-user-group"
+        icon: Network
     },
     {
         name: "Notification",
         href: "/notification",
-        class: "fa-solid fa-bell"
+        icon: Bell
     },
     {
         name: "Remote Server",
         href: "/remote-server",
-        class: "fa-solid fa-computer-mouse"
+        icon: Wifi
     }
 ]
