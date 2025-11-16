@@ -44,7 +44,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         </nav>
 
         <div className="p-4 border-t border-sidebar-border text-sm text-muted-foreground">
-          <p>v1.0.0</p>
+          <p>System Management</p>
         </div>
       </div>
 
@@ -60,11 +60,6 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </Button>
           <h2 className="text-2xl font-bold flex-1 ml-4 md:ml-0">System Management</h2>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
-              Settings
-            </Button>
-          </div>
         </header>
 
         {/* Content Area */}
