@@ -18,7 +18,7 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         } bg-sidebar text-sidebar-foreground transition-all duration-300 overflow-hidden flex flex-col border-r border-sidebar-border md:static md:translate-x-0`}
       >
         <div className="p-6 border-b border-sidebar-border">
-          <h1 className="text-xl font-bold text-sidebar-primary text-center">System Management</h1>
+          <Link href={"/resource"}><h1 className="text-2xl font-bold text-sidebar-primary">System Management</h1></Link>
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
