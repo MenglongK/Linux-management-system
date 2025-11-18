@@ -85,7 +85,6 @@ export default function Users() {
                 <thead>
                   <tr className="border-b border-border">
                     <th className="text-left py-3 px-4 font-semibold">Name</th>
-                    <th className="text-left py-3 px-4 font-semibold">Email</th>
                     <th className="text-left py-3 px-4 font-semibold">Role</th>
                     <th className="text-left py-3 px-4 font-semibold">
                       Status
@@ -105,9 +104,6 @@ export default function Users() {
                       className="border-b border-border hover:bg-muted/50 transition"
                     >
                       <td className="py-3 px-4">{user.name}</td>
-                      <td className="py-3 px-4 text-sm text-muted-foreground">
-                        {user.email}
-                      </td>
                       <td className="py-3 px-4 capitalize">
                         <span className="bg-primary/10 text-primary px-2 py-1 rounded text-sm font-medium">
                           {user.role}
@@ -126,12 +122,12 @@ export default function Users() {
                       </td>
                       <td className="py-3 px-4">
                         <div className="flex flex-wrap gap-1">
-                          {user.permissions.slice(0, 2).map((perm) => (
+                          {user.permissions.slice(0, 3).map((perm) => (
                             <PermissionBadge key={perm} permission={perm} />
                           ))}
-                          {user.permissions.length > 2 && (
+                          {user.permissions.length > 3 && (
                             <span className="text-xs text-muted-foreground">
-                              +{user.permissions.length - 2}
+                              +{user.permissions.length - 3}
                             </span>
                           )}
                         </div>

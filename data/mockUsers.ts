@@ -6,7 +6,7 @@ export const mockUsers: User[] = [
     name: 'John Admin',
     email: 'john@system.com',
     role: 'admin',
-    permissions: ['read', 'write', 'delete', 'manage_users'],
+    permissions: ['read', 'write', 'execute'],
     status: 'active',
   },
   {
