@@ -1,0 +1,48 @@
+import { RemoteServer } from "@/types/remoteServerType";
+
+export const mockServers: RemoteServer[] = [
+  {
+    id: "1",
+    name: "Production Server 1",
+    ipAddress: "192.168.1.100",
+    port: 22,
+    username: "admin",
+    status: "online",
+    lastChecked: "2 minutes ago",
+    region: "US-East-1",
+    description: "Main production server",
+  },
+  {
+    id: "2",
+    name: "Production Server 2",
+    ipAddress: "192.168.1.101",
+    port: 22,
+    username: "admin",
+    status: "online",
+    lastChecked: "3 minutes ago",
+    region: "US-West-2",
+    description: "Secondary production server",
+  },
+  {
+    id: "3",
+    name: "Staging Server",
+    ipAddress: "192.168.1.102",
+    port: 22,
+    username: "deploy",
+    status: "maintenance",
+    lastChecked: "15 minutes ago",
+    region: "EU-West-1",
+    description: "Staging environment",
+  },
+  {
+    id: "4",
+    name: "Backup Server",
+    ipAddress: "10.0.0.50",
+    port: 22,
+    username: "backup",
+    status: "offline",
+    lastChecked: "1 hour ago",
+    region: "US-Central-1",
+    description: "Backup and disaster recovery",
+  },
+];
