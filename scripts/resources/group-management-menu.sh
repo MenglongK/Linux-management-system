@@ -69,15 +69,15 @@ set_permissions() {
 }
 
 # ======== VIEW GROUPS ========
-view_groups() {
+view_groups(){
     header "ALL GROUPS AND MEMBERS"
     printf "\e[33m%-20s | %-5s | %-30s\e[0m\n" "Group Name" "GID" "Members"
     echo "-----------------------------------------------------------------------"
 
-    # អានពី /etc/group (Linux)
+    # Read from /etc/group 
     if [ -f /etc/group ]; then
         while IFS=: read -r group_name password gid members; do
-            members=${members:-<no members>}  #
+            members=${members:-<no members>}  # Show <no members> if empty
             printf "\e[34m%-20s\e[0m | %-5s | %-30s\n" "$group_name" "$gid" "$members"
         done < /etc/group
     else
