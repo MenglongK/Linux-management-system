@@ -1,15 +1,15 @@
 
-export function MetricCircle({ 
-  label, 
-  percentage, 
-  total, 
-  colorStart, 
-  colorEnd 
-}: { 
-  label: string; 
-  percentage: number; 
-  total: string; 
-  colorStart: string; 
+export function MetricCircle({
+  label,
+  percentage,
+  total,
+  colorStart,
+  colorEnd
+}: {
+  label: string;
+  percentage: number;
+  total: string;
+  colorStart: string;
   colorEnd: string;
 }) {
   const radius = 45;
@@ -20,12 +20,12 @@ export function MetricCircle({
   return (
     <div className="flex flex-col items-center justify-center">
       {/* 1. TOTAL SIZE (ABOVE) */}
-      <div className="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">
+      <div className="text-xs font-medium text-green-600 mb-2 uppercase tracking-wider">
         Total: {total}
       </div>
 
       {/* 2. THE CIRCLE */}
-      <div className="relative w-36 h-36">
+      <div className="relative w-65 h-65">
         {/* SVG Graphic */}
         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
           {/* Define Gradient */}
