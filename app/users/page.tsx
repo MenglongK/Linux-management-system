@@ -25,11 +25,28 @@ export default function Users() {
   const [users, setUsers] = useState<User[]>(mockUsers);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAddUser = (user: Omit<User, "id">) => {
-    const newUser: User = { ...user, id: Date.now().toString() };
-    setUsers([...users, newUser]);
-    setModalOpen(false);
+  const handleAddUser = async (user: Omit<User, "id">) => {
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: user.email }),
+      });
+      if (!res.ok) {
+        throw new Error("Registration failed. Please try again.");
+      }
+      const data = await res.json();
+      alert(data.message || "Registration Success");
+      // Add user to state after successful registration
+      const newUser: User = { ...user, id: Date.now().toString() };
+      setUsers([...users, newUser]);
+    } catch (error) {
+      setError((error as Error).message || "An error occurred during registration.");
+    } finally {
+      setModalOpen(false);
+    }
   };
 
   const handleUpdateUser = (user: User) => {
@@ -111,11 +128,10 @@ export default function Users() {
                       </td>
                       <td className="py-3 px-4">
                         <span
-                          className={`text-sm font-medium ${
-                            user.status === "active"
-                              ? "text-green-600 dark:text-green-400"
-                              : "text-red-600 dark:text-red-400"
-                          }`}
+                          className={`text-sm font-medium ${user.status === "active"
+                            ? "text-green-600 dark:text-green-400"
+                            : "text-red-600 dark:text-red-400"
+                            }`}
                         >
                           {user.status === "active" ? "✓ Active" : "✗ Inactive"}
                         </span>
