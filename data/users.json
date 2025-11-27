@@ -1,0 +1,20 @@
+[
+  {
+    "username": "meng",
+    "password": "123",
+    "permission": [
+      "read",
+      "write",
+      "execute"
+    ]
+  },
+  {
+    "username": "kompheak",
+    "password": "123",
+    "permission": [
+      "read",
+      "write",
+      "execute"
+    ]
+  }
+]

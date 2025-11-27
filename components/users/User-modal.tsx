@@ -22,13 +22,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { UserModalProps, Users } from "@/types/userType";
 
-const availablePermissions = [
-  "read",
-  "write",
-  "delete",
-  "manage_users",
-  "manage_groups",
-];
+const availablePermissions = ["read", "write", "execute"];
 
 export function UserModal({
   open,
@@ -43,7 +37,6 @@ export function UserModal({
     permissions: [],
     status: "active",
   });
-
   useEffect(() => {
     // Defer the state update to avoid calling setState synchronously within the effect
     Promise.resolve().then(() => {
@@ -60,7 +53,6 @@ export function UserModal({
       }
     });
   }, [user, open]);
-
   const handlePermissionChange = (permission: string) => {
     setFormData({
       ...formData,
@@ -70,9 +62,66 @@ export function UserModal({
     });
   };
 
-  const handleSubmit = () => {
-    onSave(formData);
+  // handle user submit & validation
+  const handleSubmit = async () => {
+    const newUser = {
+      username: formData.name.toLowerCase().trim(),
+      password: formData.email.trim(),
+      permission: formData.permissions,
+    };
+    // Step 1: Validate if the username exists in the existing users
+    try {
+      const response = await fetch("/api/users"); // Fetch current users
+      const usersData = await response.json();
+
+      // Check if the username already exists in the existing data
+      const userExists = usersData.some(
+        (user: { username: string }) => user.username === newUser.username
+      );
+
+      if (userExists) {
+        alert("Username already exists!");
+        return; // Stop the form submission if username exists
+      }
+
+      onSave(formData);
+      // Step 2: Proceed with submitting the new user data
+      const saveResponse = await fetch("/api/users", {
+        method: "POST",
+        body: JSON.stringify(newUser),
+      });
+
+      const saveResult = await saveResponse.json();
+      if (saveResponse.ok) {
+        alert("User created successfully!");
+      } else {
+        alert(saveResult.error || "Error occurred while saving user.");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      alert("An error occurred while checking username.");
+    }
   };
+  // onSave(formData);
+  // await fetch("/api/save-data/users", {
+  //   method: "POST",
+  //   body: JSON.stringify(newUser),
+  // });
+  // alert("Create successfully")
+
+  // const handleSave = async () => {
+  // const newUser = {
+  //   username: formData.name,
+  //   password: formData.email,
+  //   role: formData.role,
+  // };
+  // console.log(newUser)
+  // await fetch("/api/save-data/users", {
+  //   method: "POST",
+  //   body: JSON.stringify(newUser),
+  // });
+
+  // alert("Saved to JSON!");}
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -88,7 +137,9 @@ export function UserModal({
 
         <div className="space-y-4">
           <div>
-            <Label htmlFor="name" className="pb-3">Name</Label>
+            <Label htmlFor="name" className="pb-3">
+              Name
+            </Label>
             <Input
               id="name"
               value={formData.name}
@@ -98,9 +149,10 @@ export function UserModal({
               placeholder="Enter user name"
             />
           </div>
-
           <div>
-            <Label htmlFor="email" className="pb-3">Email</Label>
+            <Label htmlFor="email" className="pb-3">
+              Email
+            </Label>
             <Input
               id="email"
               type="email"
@@ -113,7 +165,9 @@ export function UserModal({
           </div>
 
           <div>
-            <Label htmlFor="role" className="pb-3">Role</Label>
+            <Label htmlFor="role" className="pb-3">
+              Role
+            </Label>
             <Select
               value={formData.role}
               onValueChange={(value: "admin" | "user" | "viewer") =>
@@ -153,7 +207,9 @@ export function UserModal({
           </div>
 
           <div>
-            <Label htmlFor="status" className="pb-3">Status</Label>
+            <Label htmlFor="status" className="pb-3">
+              Status
+            </Label>
             <Select
               value={formData.status}
               onValueChange={(value: "active" | "inactive") =>
