@@ -1,19 +1,13 @@
-
 import { sendTelegramMessage } from "@/lib/telegram";
 import { NextResponse } from "next/server";
-
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { name, email, role } = body;
-
-    if (!email || typeof email !== 'string' || !email.includes('@')) {
-      return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
-    }
+    const { name, memberCount } = body;
 
     if (!name || typeof name !== 'string') {
-      return NextResponse.json({ error: "Invalid name" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid group name" }, { status: 400 });
     }
 
     try {
@@ -26,14 +20,14 @@ export async function POST(req: Request) {
         minute: '2-digit',
         second: '2-digit'
       });
-      await sendTelegramMessage(`🟢  New User Added\nName: ${name}\nEmail: ${email}\nRole: ${role || 'user'}\nDate: ${timestamp}`);
+      await sendTelegramMessage(`🟢 New Group Added\nGroup: ${name}\nMembers: ${memberCount || 0}\nDate: ${timestamp}`);
     } catch (telegramError) {
       console.error("Telegram notification failed:", telegramError);
     }
 
-    return NextResponse.json({ message: "User added successfully" });
+    return NextResponse.json({ message: "Group added successfully" });
   } catch (error) {
-    console.error("Sign-up error:", error);
+    console.error("Group creation error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
