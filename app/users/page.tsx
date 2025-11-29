@@ -20,6 +20,8 @@ import { UserModal } from "@/components/users/User-modal";
 import { PermissionBadge } from "@/components/users/Permission-badge";
 import { User } from "@/types/userType";
 import { mockUsers } from "@/data/mockUsers";
+import { mockNotifications } from "@/data/mockNotification";
+import { NOTIFICATION_EVENTS } from "@/lib/notification";
 
 export default function Users() {
   const [users, setUsers] = useState<User[]>(mockUsers);
@@ -27,21 +29,46 @@ export default function Users() {
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Get current notifications from localStorage or fallback to mock
+  const getCurrentNotifications = () => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('notifications');
+      return saved ? JSON.parse(saved) : mockNotifications;
+    }
+    return mockNotifications;
+  };
+
   const handleAddUser = async (user: Omit<User, "id">) => {
     try {
       const res = await fetch("/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: user.email }),
+        body: JSON.stringify({ name: user.name, email: user.email, role: user.role }),
       });
       if (!res.ok) {
         throw new Error("Registration failed. Please try again.");
       }
       const data = await res.json();
       alert(data.message || "Registration Success");
+
       // Add user to state after successful registration
       const newUser: User = { ...user, id: Date.now().toString() };
       setUsers([...users, newUser]);
+
+      // Trigger notifications for user added event
+      try {
+        await fetch("/api/notifications/trigger", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            eventTrigger: NOTIFICATION_EVENTS.USER_ADDED,
+            message: `New user "${user.name}" (${user.email}) added with role: ${user.role}`,
+            notifications: getCurrentNotifications(),
+          }),
+        });
+      } catch (notificationError) {
+        console.error("Failed to trigger notifications:", notificationError);
+      }
     } catch (error) {
       setError((error as Error).message || "An error occurred during registration.");
     } finally {

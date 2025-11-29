@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -15,8 +15,20 @@ import { Notification } from "@/types/notification";
 import { NotificationModal } from "@/components/notification/Notification";
 
 export default function Notifications() {
-  const [notifications, setNotifications] =
-    useState<Notification[]>(mockNotifications);
+  const [notifications, setNotifications] = useState<Notification[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('notifications');
+      return saved ? JSON.parse(saved) : mockNotifications;
+    }
+    return mockNotifications;
+  });
+
+  // Save to localStorage whenever notifications change
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('notifications', JSON.stringify(notifications));
+    }
+  }, [notifications]);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingNotification, setEditingNotification] =
     useState<Notification | null>(null);
@@ -145,7 +157,7 @@ export default function Notifications() {
                           <Mail size={16} className="text-gray-500" />
                         )}
                         <span className="capitalize">
-                          {notification.type}: {notification.recipient}
+                          {notification.type}: {notification.recipient || 'Default Chat'}
                         </span>
                       </div>
                       <div className="text-xs text-muted-foreground">

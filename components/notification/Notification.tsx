@@ -32,6 +32,10 @@ const eventTriggers = [
   "server_offline",
   "user_login",
   "user_logout",
+  "user_added",
+  "group_added",
+  "group_updated",
+  "group_deleted",
 ];
 
 export function NotificationModal({
@@ -88,6 +92,7 @@ export function NotificationModal({
           <div>
             <Label htmlFor="name" className="pb-3">Alert Name</Label>
             <Input
+
               id="name"
               value={formData.name}
               onChange={(e) =>
@@ -145,7 +150,7 @@ export function NotificationModal({
               }
               placeholder={
                 formData.type === "telegram"
-                  ? "@channel_name or -123456789"
+                  ? "Leave empty to use default chat ID"
                   : "email@example.com"
               }
             />

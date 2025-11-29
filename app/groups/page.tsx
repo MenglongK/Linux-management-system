@@ -13,30 +13,108 @@ import { Plus, Edit2, Trash2, Users } from "lucide-react";
 import { GroupModal } from "@/components/groups/Groups";
 import { mockGroups } from "@/data/mockGroups";
 import { Group } from "@/types/groupType";
+import { mockNotifications } from "@/data/mockNotification";
+import { NOTIFICATION_EVENTS } from "@/lib/notification";
 
 export default function Groups() {
   const [groups, setGroups] = useState<Group[]>(mockGroups);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingGroup, setEditingGroup] = useState<Group | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAddGroup = (group: Omit<Group, "id" | "createdAt">) => {
-    const newGroup: Group = {
-      ...group,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString().split("T")[0],
-    };
-    setGroups([...groups, newGroup]);
-    setModalOpen(false);
+  // Get current notifications from localStorage or fallback to mock
+  const getCurrentNotifications = () => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('notifications');
+      return saved ? JSON.parse(saved) : mockNotifications;
+    }
+    return mockNotifications;
   };
 
-  const handleUpdateGroup = (group: Group) => {
+  const handleAddGroup = async (group: Omit<Group, "id" | "createdAt">) => {
+    try {
+      const res = await fetch("/api/groups", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: group.name, memberCount: group.memberCount }),
+      });
+      if (!res.ok) {
+        throw new Error("Group creation failed. Please try again.");
+      }
+      const data = await res.json();
+      alert(data.message || "Group added successfully");
+      setError(null); // Clear any previous error
+
+      // Add group to state after successful creation
+      const newGroup: Group = {
+        ...group,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString().split("T")[0],
+      };
+      setGroups([...groups, newGroup]);
+
+      // Trigger notifications for group added event
+      try {
+        await fetch("/api/notifications/trigger", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            eventTrigger: NOTIFICATION_EVENTS.GROUP_ADDED,
+            message: `New group "${group.name}" created with ${group.memberCount} members`,
+            notifications: getCurrentNotifications(),
+          }),
+        });
+      } catch (notificationError) {
+        console.error("Failed to trigger notifications:", notificationError);
+      }
+    } catch (error) {
+      setError((error as Error).message || "An error occurred during group creation.");
+    } finally {
+      setModalOpen(false);
+    }
+  };
+
+  const handleUpdateGroup = async (group: Group) => {
     setGroups(groups.map((g) => (g.id === group.id ? group : g)));
     setEditingGroup(null);
     setModalOpen(false);
+
+    // Trigger notifications for group updated event
+    try {
+      await fetch("/api/notifications/trigger", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          eventTrigger: NOTIFICATION_EVENTS.GROUP_UPDATED,
+          message: `Group "${group.name}" has been updated`,
+          notifications: getCurrentNotifications(),
+        }),
+      });
+    } catch (notificationError) {
+      console.error("Failed to trigger notifications:", notificationError);
+    }
   };
 
-  const handleDeleteGroup = (id: string) => {
+  const handleDeleteGroup = async (id: string) => {
+    const groupToDelete = groups.find((g) => g.id === id);
     setGroups(groups.filter((g) => g.id !== id));
+
+    // Trigger notifications for group deleted event
+    if (groupToDelete) {
+      try {
+        await fetch("/api/notifications/trigger", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            eventTrigger: NOTIFICATION_EVENTS.GROUP_DELETED,
+            message: `Group "${groupToDelete.name}" has been deleted`,
+            notifications: getCurrentNotifications(),
+          }),
+        });
+      } catch (notificationError) {
+        console.error("Failed to trigger notifications:", notificationError);
+      }
+    }
   };
 
   return (
