@@ -11,22 +11,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2, Edit, PlusSquare } from "lucide-react";
 import { UserModal, UserModalMode } from "@/components/users/User-modal";
+import { User } from "@/types/userType";
 
 export default function Users() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<UserModalMode>("create");
-  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
+  // Fetch users from API
   const fetchUsers = async () => {
     try {
       const res = await fetch("/api/users/get");
-      if (!res.ok) {
-        throw new Error(`Failed to fetch users: ${res.statusText}`);
-      }
+      if (!res.ok) throw new Error(`Failed to fetch users: ${res.statusText}`);
 
-      const data = await res.json();
-      console.log(data);
+      const data: { users: User[] } = await res.json();
       setUsers(data.users || []);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -37,22 +36,21 @@ export default function Users() {
     fetchUsers();
   }, []);
 
+  // Modal handlers
   const openCreateModal = () => {
     setSelectedUser(null);
     setModalMode("create");
     setModalOpen(true);
   };
 
-  const openEditModal = () => {
-    // No row selection yet, so just open empty and let user type
-    setSelectedUser(null);
+  const openEditModal = (user?: User) => {
+    setSelectedUser(user ?? null);
     setModalMode("edit");
     setModalOpen(true);
   };
 
-  const openDeleteModal = () => {
-    // Delete is by username input, no need to pre-select
-    setSelectedUser(null);
+  const openDeleteModal = (user?: User) => {
+    setSelectedUser(user ?? null);
     setModalMode("delete");
     setModalOpen(true);
   };
@@ -74,25 +72,18 @@ export default function Users() {
               <CardDescription>Total: {users.length} users</CardDescription>
             </div>
             <div className="flex gap-3">
-              {/* Add */}
               <Button onClick={openCreateModal}>
                 <PlusSquare size={15} />
               </Button>
 
-              {/* Edit (general, by typing username) */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={openEditModal}
-              >
+              <Button variant="ghost" size="sm" onClick={() => openEditModal()}>
                 <Edit size={20} />
               </Button>
 
-              {/* Delete with confirmation inside modal */}
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={openDeleteModal}
+                onClick={() => openDeleteModal()}
                 className="text-destructive hover:text-destructive"
               >
                 <Trash2 size={20} className="text-red-600" />
@@ -109,14 +100,12 @@ export default function Users() {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user, index) => (
+                  {users.map((user) => (
                     <tr
-                      key={user.id ?? index}
+                      key={user.id}
                       className="border-b border-border hover:bg-muted/50 transition"
                     >
-                      <td className="py-3 px-4">
-                        {user.name ?? user.username ?? String(user)}
-                      </td>
+                      <td className="py-3 px-4">{user.name ?? "Unknown"}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -131,7 +120,7 @@ export default function Users() {
         onOpenChange={setModalOpen}
         user={selectedUser}
         mode={modalMode}
-        onSave={fetchUsers} // refresh list after create/update/delete
+        onSave={fetchUsers}
       />
     </>
   );
