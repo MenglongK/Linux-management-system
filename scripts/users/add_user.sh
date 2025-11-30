@@ -1,11 +1,20 @@
 #!/bin/bash
-USERNAME=$1
-PASSWORD=$2
+set -e
 
-# Create user
+USERNAME="$1"
+
+if [[ -z "$USERNAME" ]]; then
+  echo "Usage: $0 <username>" >&2
+  exit 1
+fi
+
+# Check if user exists
+if id "$USERNAME" &>/dev/null; then
+  echo "❌ User '$USERNAME' already exists" >&2
+  exit 1
+fi
+
+# Create user with home directory and bash shell
 sudo useradd -m -s /bin/bash "$USERNAME"
 
-# Set password
-echo "$USERNAME:$PASSWORD" | sudo chpasswd
-
-echo "User $USERNAME created successfully"
+echo "✅ User '$USERNAME' created successfully"

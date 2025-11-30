@@ -27,8 +27,8 @@ export default function Dashboard() {
       }
     };
     fetchUsers();
-    const i = setInterval(fetchUsers, 5000);
-    return () => clearInterval(i);
+    // const i = setInterval(fetchUsers, 5000);
+    // return () => clearInterval(i);
   }, []);
 
   return (

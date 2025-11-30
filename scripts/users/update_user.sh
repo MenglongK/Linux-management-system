@@ -1,30 +1,35 @@
 #!/bin/bash
-USERNAME=$1
-PASSWORD=$2
-shift 2
-PERMISSIONS=("$@")
+set -e
 
-# Change password if provided
-if [ -n "$PASSWORD" ]; then
-    echo "$USERNAME:$PASSWORD" | sudo chpasswd
+OLD_USERNAME="$1"
+NEW_USERNAME="$2"
+
+if [[ -z "$OLD_USERNAME" || -z "$NEW_USERNAME" ]]; then
+  echo "Usage: $0 <old_username> <new_username>" >&2
+  exit 1
 fi
 
-# Set permissions
-for PERM in "${PERMISSIONS[@]}"; do
-    case $PERM in
-        "read")
-            sudo usermod -aG readers "$USERNAME" 2>/dev/null || true
-            ;;
-        "write")
-            sudo usermod -aG writers "$USERNAME" 2>/dev/null || true
-            ;;
-        "execute")
-            sudo usermod -aG executors "$USERNAME" 2>/dev/null || true
-            ;;
-        "all")
-            sudo usermod -aG sudo "$USERNAME"
-            ;;
-    esac
-done
+# Check if old user exists
+if ! id "$OLD_USERNAME" &>/dev/null; then
+  echo "❌ User '$OLD_USERNAME' does not exist" >&2
+  exit 1
+fi
 
-echo "User $USERNAME updated successfully"
+# Check if new username is already taken
+if id "$NEW_USERNAME" &>/dev/null; then
+  echo "❌ User '$NEW_USERNAME' already exists" >&2
+  exit 1
+fi
+
+# Rename login name
+usermod -l "$NEW_USERNAME" "$OLD_USERNAME"
+
+# Optional: also move home directory
+OLD_HOME="/home/$OLD_USERNAME"
+NEW_HOME="/home/$NEW_USERNAME"
+
+if [[ -d "$OLD_HOME" ]]; then
+  usermod -d "$NEW_HOME" -m "$NEW_USERNAME"
+fi
+
+echo "✅ User renamed from '$OLD_USERNAME' to '$NEW_USERNAME' successfully"

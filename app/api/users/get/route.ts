@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { exec } from "child_process";
 import path from "path";
 
+
 // API route to run the shell script and return the output
 export async function GET() {
   // Absolute path to your shell script
@@ -38,7 +39,7 @@ export async function GET() {
     console.log("Script result:", result);  // Log the output for debugging
 
     // Mock permissions for each user (since `get_user.sh` doesn't provide permissions)
-    const users = result.split("\n").filter(line=>line.trim()!=="").map(line => {
+    const users = result.split("\n").filter(line => line.trim() !== "").map(line => {
       const name = line.trim();  // Extract the username
       const permissions = [""];  // Mock permissions for each user
       return { name, permissions };
