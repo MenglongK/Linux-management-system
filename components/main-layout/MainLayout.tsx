@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { NavFootData } from "@/data/navFootData";
+import { useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Menu, X} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { NavFootData } from '@/data/navFootData';
 
 export function MainLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -14,15 +14,11 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen bg-background text-foreground">
       <div
         className={`${
-          sidebarOpen ? "w-64" : "w-0"
+          sidebarOpen ? 'w-64' : 'w-0'
         } bg-sidebar text-sidebar-foreground transition-all duration-300 overflow-hidden flex flex-col border-r border-sidebar-border md:static md:translate-x-0`}
       >
         <div className="p-6 border-b border-sidebar-border">
-          <Link href={"/resource"}>
-            <h1 className="text-2xl font-bold text-sidebar-primary">
-              System Management
-            </h1>
-          </Link>
+          <Link href={"/resource"}><h1 className="text-2xl font-bold text-sidebar-primary">System Management</h1></Link>
         </div>
 
         <nav className="flex-1 p-4 space-y-2">
@@ -32,11 +28,11 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
             return (
               <Link key={item.href} href={item.href}>
                 <Button
-                  variant={isActive ? "default" : "ghost"}
+                  variant={isActive ? 'default' : 'ghost'}
                   className={`w-full justify-start gap-3 ${
                     isActive
-                      ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                      : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+                      : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                   }`}
                 >
                   <Icon size={20} />
@@ -63,18 +59,17 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
           >
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </Button>
-          <h2 className="text-2xl font-bold flex-1 ml-4 md:ml-0">
-            System Management
-          </h2>
+          <h2 className="text-2xl font-bold flex-1 ml-4 md:ml-0">System Management</h2>
         </header>
 
         {/* Content Area */}
-        <main className="flex-1 overflow-auto p-6">{children}</main>
+        <main className="flex-1 overflow-auto p-6">
+          {children}
+        </main>
 
         <footer className="bg-card border-t border-border px-6 py-4 text-sm text-muted-foreground">
           <div className="flex items-center justify-between">
             <p>&copy; 2025 System Management. All rights reserved.</p>
-            {/* <p>Last updated: {new Date().toLocaleDateString()}</p> */}
             <p>Last updated: {new Date().toLocaleDateString()}</p>
           </div>
         </footer>
