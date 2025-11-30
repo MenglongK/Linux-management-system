@@ -23,11 +23,6 @@ export const NavFootData: NavFoot[] = [
         icon: Network
     },
     {
-        name: "Notification",
-        href: "/notification",
-        icon: Bell
-    },
-    {
         name: "Remote Server",
         href: "/remote-server",
         icon: Wifi
