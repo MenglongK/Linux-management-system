@@ -1,23 +1,20 @@
 export type User = {
   id: string;
   name: string;
-  email: string;
-  role: 'admin' | 'user' | 'viewer';
-  permissions: string[];
-  status: 'active' | 'inactive';
+  password: string;
 };
 export interface Users {
   id?: string;
   name: string;
-  email: string;
-  role: "admin" | "user" | "viewer";
-  permissions: string[];
-  status: "active" | "inactive";
+  password: string;
 }
+
+export type UserModalMode = "create" | "edit" | "delete";
 
 export interface UserModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user: User | null;
-  onSave: (user: User | Omit<User, "id">) => void
+  user?: { username: string }; // adjust to your real user type
+  onSave?: (result: any) => void;
+  mode: UserModalMode;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,172 +12,298 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { UserModalProps, Users } from "@/types/userType";
 
-const availablePermissions = [
-  "read",
-  "write",
-  "delete",
-  "manage_users",
-  "manage_groups",
-];
+// You can also move this type into "@/types/userType"
+export type UserModalMode = "create" | "edit" | "delete";
+
+export interface UserModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  user: any | null;          // you can replace `any` with your User type
+  mode: UserModalMode;
+  onSave?: () => void;       // parent will refresh list after any action
+}
 
 export function UserModal({
   open,
   onOpenChange,
   user,
+  mode,
   onSave,
 }: UserModalProps) {
-  const [formData, setFormData] = useState<Users>({
-    name: "",
-    email: "",
-    role: "user",
-    permissions: [],
-    status: "active",
-  });
+  const [username, setUsername] = useState("");
+  const [newUsername, setNewUsername] = useState("");
+  const [existingUsers, setExistingUsers] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  // Load existing Linux usernames for validation
   useEffect(() => {
-    // Defer the state update to avoid calling setState synchronously within the effect
-    Promise.resolve().then(() => {
-      if (user) {
-        setFormData(user);
-      } else {
-        setFormData({
-          name: "",
-          email: "",
-          role: "user",
-          permissions: [],
-          status: "active",
-        });
-      }
-    });
-  }, [user, open]);
+    fetch("/api/users/create", { method: "GET" })
+      .then((res) => res.json())
+      .then((data) => setExistingUsers(data.users || []))
+      .catch(() => setExistingUsers([]));
+  }, []);
 
-  const handlePermissionChange = (permission: string) => {
-    setFormData({
-      ...formData,
-      permissions: formData.permissions.includes(permission)
-        ? formData.permissions.filter((p) => p !== permission)
-        : [...formData.permissions, permission],
-    });
+  // Prefill username when editing/deleting a known user
+  useEffect(() => {
+    if (user && user.name) {
+      setUsername(user.name);
+    } else {
+      setUsername("");
+    }
+    setNewUsername("");
+  }, [user, mode, open]);
+
+  const close = () => {
+    onOpenChange(false);
   };
 
-  const handleSubmit = () => {
-    onSave(formData);
+  const handleCreate = async () => {
+    const cleanUsername = username.trim();
+
+    if (!cleanUsername) {
+      alert("Username and password are required.");
+      return;
+    }
+
+    if (existingUsers.includes(cleanUsername)) {
+      alert("❌ User already exists!");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch("/api/users/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: cleanUsername }),
+      });
+
+      const result = await response.json();
+      alert(result.message);
+      onSave?.();
+      close();
+    } catch {
+      alert("Failed to create user.");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleUpdate = async () => {
+    const cleanUsername = username.trim();
+    const cleanNewUsername = newUsername.trim();
+
+    if (!cleanUsername || !cleanNewUsername) {
+      alert("Old and new username are required.");
+      return;
+    }
+
+    if (!existingUsers.includes(cleanUsername)) {
+      alert("❌ Username not found!");
+      return;
+    }
+
+    const confirmEdit = confirm(
+      `Edit user "${cleanUsername}" to "${cleanNewUsername}"?`
+    );
+    if (!confirmEdit) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/users/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: cleanUsername, newUsername: cleanNewUsername }),
+      });
+
+      const result = await res.json();
+      alert(result.message);
+      onSave?.();
+      close();
+    } catch {
+      alert("Failed to update user.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+const handleDelete = async () => {
+  setSuccessMsg(null);
+  setErrorMsg(null);
+
+  const cleanUsername = username.trim();
+  if (!cleanUsername) {
+    setErrorMsg("Username is required.");
+    return;
+  }
+
+  if (!existingUsers.includes(cleanUsername)) {
+    setErrorMsg("❌ Username not found!");
+    return;
+  }
+
+  const confirmed = window.confirm(
+    `Are you sure you want to delete user "${cleanUsername}"? This cannot be undone.`
+  );
+  if (!confirmed) {
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const res = await fetch("/api/users/delete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username: cleanUsername }),
+    });
+
+    const data = await res.json();
+
+    console.log("DELETE RESPONSE:", res.status, data); // 👈 add this
+
+    if (!res.ok) {
+      setErrorMsg(data.message || "Failed to delete user.");
+    } else {
+      setSuccessMsg(data.message || "User deleted successfully.");
+      setUsername("");
+      onSave?.();
+      close();
+    }
+  } catch (err) {
+    console.error("DELETE FETCH ERROR:", err); // 👈 add this
+    setErrorMsg("Something went wrong, please try again.");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
+  const title =
+    mode === "create"
+      ? "Add New User"
+      : mode === "edit"
+      ? "Edit User"
+      : "Delete User";
+
+  const description =
+    mode === "create"
+      ? "Create a new user account"
+      : mode === "edit"
+      ? "Update user information"
+      : "Delete a user account from the Linux system. This cannot be undone.";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{user ? "Edit User" : "Add New User"}</DialogTitle>
-          <DialogDescription>
-            {user
-              ? "Update user information and permissions"
-              : "Create a new user account"}
-          </DialogDescription>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
-          <div>
-            <Label htmlFor="name" className="pb-3">Name</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              placeholder="Enter user name"
-            />
-          </div>
+          {/* CREATE */}
+          {mode === "create" && (
+            <>
+              <div>
+                <Label htmlFor="create-username" className="pb-3">
+                  Username
+                </Label>
+                <Input
+                  id="create-username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter username"
+                />
+              </div>
+            </>
+          )}
 
-          <div>
-            <Label htmlFor="email" className="pb-3">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={formData.email}
-              onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
-              }
-              placeholder="user@example.com"
-            />
-          </div>
+          {/* EDIT */}
+          {mode === "edit" && (
+            <>
+              <div>
+                <Label htmlFor="old-username" className="pb-3">
+                  Old Name
+                </Label>
+                <Input
+                  id="old-username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter current username"
+                />
+              </div>
+              <div>
+                <Label htmlFor="new-username" className="pb-3">
+                  New Name
+                </Label>
+                <Input
+                  id="new-username"
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  placeholder="Enter new username"
+                />
+              </div>
+            </>
+          )}
 
-          <div>
-            <Label htmlFor="role" className="pb-3">Role</Label>
-            <Select
-              value={formData.role}
-              onValueChange={(value: "admin" | "user" | "viewer") =>
-                setFormData({ ...formData, role: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="user">User</SelectItem>
-                <SelectItem value="viewer">Viewer</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div>
-            <Label className="pb-3">Permissions</Label>
-            <div className="space-y-2 mt-2">
-              {availablePermissions.map((permission) => (
-                <div key={permission} className="flex items-center gap-2">
-                  <Checkbox
-                    id={permission}
-                    checked={formData.permissions.includes(permission)}
-                    onCheckedChange={() => handlePermissionChange(permission)}
-                  />
-                  <Label
-                    htmlFor={permission}
-                    className="capitalize cursor-pointer"
-                  >
-                    {permission}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <Label htmlFor="status" className="pb-3">Status</Label>
-            <Select
-              value={formData.status}
-              onValueChange={(value: "active" | "inactive") =>
-                setFormData({ ...formData, status: value })
-              }
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          {/* DELETE */}
+          {mode === "delete" && (
+            <>
+              <div>
+                <Label htmlFor="delete-username" className="pb-3">
+                  Username to delete
+                </Label>
+                <Input
+                  id="delete-username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter username to delete"
+                />
+              </div>
+              <p className="text-sm text-red-500">
+                ⚠ This will remove the user from the Linux system. Double-check
+                the username before deleting.
+              </p>
+            </>
+          )}
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button
+            variant="outline"
+            onClick={close}
+            disabled={loading}
+          >
             Cancel
           </Button>
-          <Button onClick={handleSubmit}>
-            {user ? "Update User" : "Add User"}
-          </Button>
+
+          {mode === "create" && (
+            <Button onClick={handleCreate} disabled={loading}>
+              {loading ? "Creating..." : "Add User"}
+            </Button>
+          )}
+
+          {mode === "edit" && (
+            <Button onClick={handleUpdate} disabled={loading}>
+              {loading ? "Updating..." : "Update User"}
+            </Button>
+          )}
+
+          {mode === "delete" && (
+            <Button
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={loading}
+            >
+              {loading ? "Deleting..." : "Delete User"}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>
