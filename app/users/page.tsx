@@ -15,28 +15,21 @@ import { UserModal, UserModalMode } from "@/components/users/User-modal";
 export default function Users() {
   const [users, setUsers] = useState<any[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [modalMode, setModalMode] = useState<UserModalMode>("create");
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
 
-  const handleAddUser = async (user: Omit<User, "id">) => {
+  const fetchUsers = async () => {
     try {
-      const res = await fetch("/api/users", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: user.email }),
-      });
+      const res = await fetch("/api/users/get");
       if (!res.ok) {
-        throw new Error("Registration failed. Please try again.");
+        throw new Error(`Failed to fetch users: ${res.statusText}`);
       }
+
       const data = await res.json();
-      alert(data.message || "Registration Success");
-      // Add user to state after successful registration
-      const newUser: User = { ...user, id: Date.now().toString() };
-      setUsers([...users, newUser]);
+      console.log(data);
+      setUsers(data.users || []);
     } catch (error) {
-      setError((error as Error).message || "An error occurred during registration.");
-    } finally {
-      setModalOpen(false);
+      console.error("Error fetching users:", error);
     }
   };
 
@@ -122,57 +115,7 @@ export default function Users() {
                       className="border-b border-border hover:bg-muted/50 transition"
                     >
                       <td className="py-3 px-4">
-                        <span
-                          className={`text-sm font-medium ${user.status === "active"
-                            ? "text-green-600 dark:text-green-400"
-                            : "text-red-600 dark:text-red-400"
-                            }`}
-                        >
-                          {user.status === "active" ? "✓ Active" : "✗ Inactive"}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="flex flex-wrap gap-1">
-                          {user.permissions.slice(0, 3).map((perm) => (
-                            <PermissionBadge key={perm} permission={perm} />
-                          ))}
-                          {user.permissions.length > 3 && (
-                            <span className="text-xs text-muted-foreground">
-                              +{user.permissions.length - 3}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 space-x-2 flex items-center">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setEditingUser(user);
-                            setModalOpen(true);
-                          }}
-                        >
-                          <Edit2 size={16} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleToggleStatus(user.id)}
-                        >
-                          {user.status === "active" ? (
-                            <Lock size={16} />
-                          ) : (
-                            <UnlockOpen size={16} />
-                          )}
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteUser(user.id)}
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 size={16} />
-                        </Button>
+                        {user.name ?? user.username ?? String(user)}
                       </td>
                     </tr>
                   ))}
