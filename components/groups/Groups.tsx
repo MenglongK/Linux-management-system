@@ -38,7 +38,7 @@ export function GroupModal({
   // Prefill username when editing/deleting a known user
   useEffect(() => {
     if (groups && groups) {
-      setExistingGroups(groups);
+      // setExistingGroups(groups.name);
     } else {
       setGroups("");
     }
@@ -72,7 +72,7 @@ export function GroupModal({
 
       const result = await response.json();
       alert(result.message);
-      onSave?.();
+      onSave?.(cleanGroup);
       close();
     } catch {
       alert("Failed to create group.");

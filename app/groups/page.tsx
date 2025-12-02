@@ -111,7 +111,7 @@ export default function Groups() {
                     Permissions
                   </p>
                   <div className="flex flex-wrap gap-1">
-                    {group.permissions.map((perm) => (
+                    {group.permissions.map((perm:never) => (
                       <span
                         key={perm}
                         className="text-xs bg-primary/10 text-primary px-2 py-1 rounded"
