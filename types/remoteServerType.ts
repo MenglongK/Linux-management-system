@@ -1,16 +1,14 @@
 export interface RemoteServer {
-  id?: string;
+  id: string;
   name: string;
   ipAddress: string;
-  port: number;
   username: string;
-  status: "online" | "offline" | "maintenance";
-  lastChecked?: string;
-  region: string;
-  description: string;
+  port?: number; // optional because some entries don’t include it
+  status: "Connected" | "Disconnected" | "Error";
+  lastConnected: string;
 }
 
-export  interface RemoteServerModalProps {
+export interface RemoteServerModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   server: RemoteServer | null;

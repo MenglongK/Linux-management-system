@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -11,32 +11,53 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus, Edit2, Trash2, Users } from "lucide-react";
 import { GroupModal } from "@/components/groups/Groups";
-import { mockGroups } from "@/data/mockGroups";
+// import { mockGroups } from "@/data/mockGroups";
 import { Group } from "@/types/groupType";
+import { UserModalMode } from "@/types/userType";
 
 export default function Groups() {
-  const [groups, setGroups] = useState<Group[]>(mockGroups);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingGroup, setEditingGroup] = useState<Group | null>(null);
+  // const [groups, setGroups] = useState<Group[]>(mockGroups);
+  // const [modalOpen, setModalOpen] = useState(false);
+  // const [editingGroup, setEditingGroup] = useState<Group | null>(null);
+    const [groups, setGroups] = useState<any[]>([]);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState<UserModalMode>("create");
+    const [selectedGroup, setSelectedGroup] = useState<any | null>(null);
+    const fetchGroups = async () => {
+        try {
+          const res = await fetch("/api/groups/get");
+          if (!res.ok) {
+            throw new Error(`Failed to fetch users: ${res.statusText}`);
+          }
+    
+          const data = await res.json();
+          // console.log(data);
+          setGroups(data.groups || []);
+        } catch (error) {
+          console.error("Error fetching users:", error);
+        }
+      };
+    
+      useEffect(() => {
+        fetchGroups()
+      }, []);
 
-  const handleAddGroup = (group: Omit<Group, "id" | "createdAt">) => {
-    const newGroup: Group = {
-      ...group,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString().split("T")[0],
-    };
-    setGroups([...groups, newGroup]);
-    setModalOpen(false);
+  const handleAddGroup = () => {
+    setSelectedGroup(null)
+    setModalMode("create")
+    setModalOpen(true)
   };
 
-  const handleUpdateGroup = (group: Group) => {
-    setGroups(groups.map((g) => (g.id === group.id ? group : g)));
-    setEditingGroup(null);
-    setModalOpen(false);
+  const handleUpdateGroup = () => {
+    setSelectedGroup(null)
+    setModalMode("edit")
+    setModalOpen(true)
   };
 
-  const handleDeleteGroup = (id: string) => {
-    setGroups(groups.filter((g) => g.id !== id));
+  const handleDeleteGroup = () => {
+    setSelectedGroup(null)
+    setModalMode("delete")
+    setModalOpen(true)
   };
 
   return (
@@ -51,7 +72,7 @@ export default function Groups() {
           </div>
           <Button
             onClick={() => {
-              setEditingGroup(null);
+              setSelectedGroup(null);
               setModalOpen(true);
             }}
             className="gap-2"
@@ -90,7 +111,7 @@ export default function Groups() {
                     Permissions
                   </p>
                   <div className="flex flex-wrap gap-1">
-                    {group.permissions.map((perm) => (
+                    {group.permissions.map((perm:never) => (
                       <span
                         key={perm}
                         className="text-xs bg-primary/10 text-primary px-2 py-1 rounded"
@@ -107,7 +128,7 @@ export default function Groups() {
                     size="sm"
                     className="flex-1"
                     onClick={() => {
-                      setEditingGroup(group);
+                      setSelectedGroup(group);
                       setModalOpen(true);
                     }}
                   >
@@ -118,7 +139,7 @@ export default function Groups() {
                     variant="outline"
                     size="sm"
                     className="flex-1 text-destructive hover:text-destructive"
-                    onClick={() => group.id && handleDeleteGroup(group.id)}
+                    onClick={() => group.name}
                   >
                     <Trash2 size={16} className="mr-1" />
                     Delete
@@ -133,12 +154,9 @@ export default function Groups() {
       <GroupModal
         open={modalOpen}
         onOpenChange={setModalOpen}
-        group={editingGroup}
-        onSave={(groups: Group | Omit<Group, "id">) =>
-          editingGroup
-            ? handleUpdateGroup(groups as Group)
-            : handleAddGroup(groups as Omit<Group, "id">)
-        }
+        group={selectedGroup}
+        mode={modalMode}
+        onSave={fetchGroups}
       />
     </>
   );

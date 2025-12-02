@@ -1,5 +1,5 @@
 import { NavFoot } from "@/types/navFoot";
-import { Bell, LayoutDashboard, Network, Server, Users, Wifi } from "lucide-react";
+import { LayoutDashboard, Network, Server, Users, Wifi } from "lucide-react";
 
 export const NavFootData: NavFoot[] = [
     {

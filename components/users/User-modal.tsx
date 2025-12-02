@@ -19,9 +19,9 @@ export type UserModalMode = "create" | "edit" | "delete";
 export interface UserModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  user: any | null;          // you can replace `any` with your User type
+  user: any | null; // you can replace `any` with your User type
   mode: UserModalMode;
-  onSave?: () => void;       // parent will refresh list after any action
+  onSave?: () => void; // parent will refresh list after any action
 }
 
 export function UserModal({
@@ -35,12 +35,12 @@ export function UserModal({
   const [newUsername, setNewUsername] = useState("");
   const [existingUsers, setExistingUsers] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  // const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  // const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   // Load existing Linux usernames for validation
   useEffect(() => {
-    fetch("/api/users/create", { method: "GET" })
+    fetch("/api/users/get", { method: "GET" })
       .then((res) => res.json())
       .then((data) => setExistingUsers(data.users || []))
       .catch(() => setExistingUsers([]));
@@ -64,7 +64,7 @@ export function UserModal({
     const cleanUsername = username.trim();
 
     if (!cleanUsername) {
-      alert("Username and password are required.");
+      alert("Username are required.");
       return;
     }
 
@@ -95,32 +95,31 @@ export function UserModal({
   const handleUpdate = async () => {
     const cleanUsername = username.trim();
     const cleanNewUsername = newUsername.trim();
-
     if (!cleanUsername || !cleanNewUsername) {
-      alert("Old and new username are required.");
+      alert("Old and New username are required and cannot include space");
       return;
     }
+    // if (!existingUsers.includes(username)) {
+    //   alert("❌ Username not found!");
+    //   return;
+    // }
 
-    if (!existingUsers.includes(cleanUsername)) {
-      alert("❌ Username not found!");
-      return;
-    }
-
-    const confirmEdit = confirm(
-      `Edit user "${cleanUsername}" to "${cleanNewUsername}"?`
-    );
+    const confirmEdit = confirm(`Edit user "${username}" to "${newUsername}" ?`);
     if (!confirmEdit) return;
 
     setLoading(true);
     try {
       const res = await fetch("/api/users/update", {
-        method: "POST",
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: cleanUsername, newUsername: cleanNewUsername }),
+        body: JSON.stringify({
+          username: cleanUsername,
+          newUsername: cleanNewUsername,
+        }),
       });
 
       const result = await res.json();
-      alert(result.message);
+      alert(result.message)
       onSave?.();
       close();
     } catch {
@@ -130,59 +129,60 @@ export function UserModal({
     }
   };
 
-const handleDelete = async () => {
-  setSuccessMsg(null);
-  setErrorMsg(null);
+  const handleDelete = async () => {
+    // setSuccessMsg(null);
+    // setErrorMsg(null);
 
-  const cleanUsername = username.trim();
-  if (!cleanUsername) {
-    setErrorMsg("Username is required.");
-    return;
-  }
-
-  if (!existingUsers.includes(cleanUsername)) {
-    setErrorMsg("❌ Username not found!");
-    return;
-  }
-
-  const confirmed = window.confirm(
-    `Are you sure you want to delete user "${cleanUsername}"? This cannot be undone.`
-  );
-  if (!confirmed) {
-    return;
-  }
-
-  setLoading(true);
-  try {
-    const res = await fetch("/api/users/delete", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username: cleanUsername }),
-    });
-
-    const data = await res.json();
-
-    console.log("DELETE RESPONSE:", res.status, data); // 👈 add this
-
-    if (!res.ok) {
-      setErrorMsg(data.message || "Failed to delete user.");
-    } else {
-      setSuccessMsg(data.message || "User deleted successfully.");
-      setUsername("");
-      onSave?.();
-      close();
+    const cleanUsername = username.trim();
+    if (!cleanUsername) {
+      // setErrorMsg("Username is required.");
+      return;
     }
-  } catch (err) {
-    console.error("DELETE FETCH ERROR:", err); // 👈 add this
-    setErrorMsg("Something went wrong, please try again.");
-  } finally {
-    setLoading(false);
-  }
-};
 
+    // if (!existingUsers.includes(cleanUsername)) {
+    //   setErrorMsg("❌ Username not found!");
+    //   return;
+    // }
 
+    const confirmed = window.confirm(
+      `Are you sure you want to delete user "${cleanUsername}" ? This cannot be undone.`
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/users/delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username: cleanUsername }),
+      });
+
+      const data = await res.json();
+
+      
+
+      console.log("DELETE RESPONSE:", res.status, data); // 👈 add this
+
+      if (!res.ok) {
+        alert("User not found!")
+        // setErrorMsg(data.message || "Failed to delete user.");
+      } else {
+        alert("User deleted successfully.")
+        setUsername("");
+        onSave?.();
+        close();
+      }
+    } catch (err) {
+      console.error("DELETE FETCH ERROR:", err); // 👈 add this
+      // setErrorMsg("Something went wrong, please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const title =
     mode === "create"
@@ -275,11 +275,7 @@ const handleDelete = async () => {
         </div>
 
         <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={close}
-            disabled={loading}
-          >
+          <Button variant="outline" onClick={close} disabled={loading}>
             Cancel
           </Button>
 

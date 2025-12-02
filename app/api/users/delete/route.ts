@@ -21,7 +21,7 @@ const SCRIPT_PATH = path.join(
   "delete_user.sh"
 );
 
-export async function POST(req: Request) {
+export async function DELETE(req: Request) {
   try {
     const { username } = await req.json();
 
