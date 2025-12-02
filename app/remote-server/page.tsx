@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -16,23 +17,29 @@ import {
   Globe,
   Signal,
   AlertTriangle,
+  Link as LinkIcon,
+  Zap,
 } from "lucide-react";
 import { RemoteServerModal } from "@/components/remote-server/RemoteServer";
 import { mockServers } from "@/data/mockRemoteServer";
 import { RemoteServer } from "@/types/remoteServerType";
+
+type NewServerData = Omit<RemoteServer, 'id' | 'status' | 'lastConnected'>;
 
 export default function RemoteServers() {
   const [servers, setServers] = useState<RemoteServer[]>(mockServers);
   const [modalOpen, setModalOpen] = useState(false);
   const [editingServer, setEditingServer] = useState<RemoteServer | null>(null);
 
-  const handleAddServer = (
-    server: Omit<RemoteServer, "id" | "lastChecked">
-  ) => {
+  const router = useRouter(); 
+
+
+  const handleAddServer = (serverData: NewServerData) => {
     const newServer: RemoteServer = {
-      ...server,
+      ...serverData,
       id: Date.now().toString(),
-      lastChecked: "now",
+      lastConnected: new Date().toISOString(),
+      status: 'Disconnected',
     };
     setServers([...servers, newServer]);
     setModalOpen(false);
@@ -47,44 +54,33 @@ export default function RemoteServers() {
   const handleDeleteServer = (id: string) => {
     setServers(servers.filter((s) => s.id !== id));
   };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "online":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200";
-      case "offline":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200";
-      case "maintenance":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200";
-    }
+  
+  const handleConnectServer = (server: RemoteServer) => {
+    console.log(`Navigating to terminal for server: ${server.name} (${server.id})`);
+    router.push(`/terminal/${server.id}`);
   };
 
-  const getStatusIcon = (status: string) => {
+  
+  const getStatusDisplay = (status: string) => {
     switch (status) {
-      case "online":
-        return <Signal className="w-4 h-4 text-green-500" />;
-      case "offline":
-        return <AlertTriangle className="w-4 h-4 text-red-500" />;
-      case "maintenance":
-        return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
+      case 'Connected':
+        return { icon: <Signal size={16} className="text-green-500" />, color: 'text-green-500' };
+      case 'Error':
+        return { icon: <AlertTriangle size={16} className="text-red-500" />, color: 'text-red-500' };
+      case 'Disconnected':
       default:
-        return <Globe className="w-4 h-4" />;
+        return { icon: <Globe size={16} className="text-gray-500" />, color: 'text-gray-500' };
     }
   };
-
-  const onlineCount = servers.filter((s) => s.status === "online").length;
-  const offlineCount = servers.filter((s) => s.status === "offline").length;
 
   return (
     <>
-      <div className="space-y-6">
+      <div className="space-y-6 p-8">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold">Remote Servers</h1>
             <p className="text-muted-foreground">
-              Manage remote servers by IP address
+              Manage remote servers by IP address and establish SSH connections.
             </p>
           </div>
           <Button
@@ -92,182 +88,101 @@ export default function RemoteServers() {
               setEditingServer(null);
               setModalOpen(true);
             }}
-            className="gap-2"
+            className="gap-2 bg-green-600 hover:bg-green-700"
           >
             <Plus size={20} />
             Add Server
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">
-                Total Servers
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{servers.length}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Online</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {onlineCount}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Offline</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">
-                {offlineCount}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Uptime</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {((onlineCount / servers.length) * 100).toFixed(1)}%
-              </div>
-            </CardContent>
-          </Card>
+        {/* --- Card Grid Rendering Logic --- */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {servers.map((server) => {
+            const { icon, color } = getStatusDisplay(server.status || 'Disconnected');
+            
+            return (
+              <Card 
+                key={server.id} 
+                className="hover:shadow-xl transition-shadow duration-300 border-2 hover:border-green-500"
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex justify-between items-start">
+                    <CardTitle className="text-xl font-semibold">{server.name}</CardTitle>
+                    <div className={`p-1 rounded-full ${color}`}>
+                      {icon}
+                    </div>
+                  </div>
+                  <CardDescription>
+                    <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        <LinkIcon size={14} className="text-muted-foreground" />
+                        <span>{server.ipAddress}</span>
+                    </div>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-sm">
+                    <span className="font-medium">User:</span> {server.username}
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-medium">Port:</span> {server.port || '22'}
+                  </p>
+                  <p className="text-sm">
+                    <span className="font-medium">Status:</span> 
+                    <span className={`ml-1 font-semibold ${color}`}>{server.status || 'Disconnected'}</span>
+                  </p>
+
+                  <div className="flex justify-between space-x-2 pt-2 border-t mt-4">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="bg-black hover:bg-gray-800 text-white grow mr-2" 
+                      onClick={() => handleConnectServer(server)}
+                    >
+                      <Zap size={16} className="mr-1" /> Connect
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditingServer(server);
+                        setModalOpen(true);
+                      }}
+                    >
+                      <Edit2 size={16} />
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeleteServer(server.id)}
+                    >
+                      <Trash2 size={16} />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Connected Servers</CardTitle>
-            <CardDescription>
-              Monitor and manage your remote infrastructure
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-border">
-                    <th className="text-left py-3 px-4 font-semibold">
-                      Server Name
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold">
-                      IP Address
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold">
-                      Region
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold">
-                      Status
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold">
-                      Last Checked
-                    </th>
-                    <th className="text-left py-3 px-4 font-semibold">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {servers.map((server) => (
-                    <tr
-                      key={server.id}
-                      className="border-b border-border hover:bg-muted/50 transition"
-                    >
-                      <td className="py-3 px-4">
-                        <div>
-                          <p className="font-semibold">{server.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {server.description}
-                          </p>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 font-mono text-sm">
-                        {server.ipAddress}:{server.port}
-                      </td>
-                      <td className="py-3 px-4 text-sm">{server.region}</td>
-                      <td className="py-3 px-4">
-                        <div className="flex items-center gap-2">
-                          {getStatusIcon(server.status)}
-                          <span
-                            className={`text-xs font-medium px-2 py-1 rounded capitalize ${getStatusColor(
-                              server.status
-                            )}`}
-                          >
-                            {server.status}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="py-3 px-4 text-sm text-muted-foreground">
-                        {server.lastChecked}
-                      </td>
-                      <td className="py-3 px-4 space-x-2 flex">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => {
-                            setEditingServer(server);
-                            setModalOpen(true);
-                          }}
-                        >
-                          <Edit2 size={16} />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            server.id && handleDeleteServer(server.id)
-                          }
-                          className="text-destructive hover:text-destructive"
-                        >
-                          <Trash2 size={16} />
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+        {servers.length === 0 && (
+            <div className="text-center py-10 text-gray-500">
+                <Globe size={32} className="mx-auto mb-2" />
+                <p>No remote servers configured yet. Click &quot;Add Server&quot; to get started.</p>
             </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800">
-          <CardHeader>
-            <CardTitle className="text-blue-900 dark:text-blue-100">
-              How to Connect Remote Servers
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-blue-800 dark:text-blue-200 space-y-2">
-            <p>To add a remote server by public IP:</p>
-            <ol className="list-decimal list-inside space-y-1">
-              <li>
-                Ensure the server is accessible via SSH (port 22 or custom port)
-              </li>
-              <li>Have valid credentials (username and password/key)</li>
-              <li>
-                Click &quot;Add Server&quot; and enter the public IP address
-              </li>
-              <li>System will verify connectivity automatically</li>
-              <li>Once verified, you can monitor and manage the server</li>
-            </ol>
-          </CardContent>
-        </Card>
+        )}
+      
       </div>
 
       <RemoteServerModal
+        key={editingServer ? editingServer.id : 'new'} 
         open={modalOpen}
         onOpenChange={setModalOpen}
         server={editingServer}
-        onSave={(server: RemoteServer | Omit<RemoteServer, "id">) =>
+        onSave={(serverData) =>
           editingServer
-            ? handleUpdateServer(server as RemoteServer)
-            : handleAddServer(server as Omit<RemoteServer, "id">)
+            ? handleUpdateServer(serverData as RemoteServer)
+            : handleAddServer(serverData as NewServerData)
         }
       />
     </>

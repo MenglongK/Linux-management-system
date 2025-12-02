@@ -1,66 +1,56 @@
+import { exec, execFile } from "child_process";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { NextResponse } from "next/server";
-import { execFile } from "child_process";
-import { promisify } from "util";
 import path from "path";
+import { promisify } from "util";
 
+export const runtime = "nodejs";
 const execPromise = promisify(execFile);
-const SCRIPT_PATH = path.join(
-    '/home',
-    'long',
-    'Documents',
-    'ISTAD-Associate',
-    'SemesterII',
-    'Kim-Chansokpheng',
-    'linux-management-systems',
-    'scripts',
-    'users',
-    'update_user.sh'
-);
-const GET_PATH = path.join('/home',
-    'long',
-    'Documents',
-    'ISTAD-Associate',
-    'SemesterII',
-    'Kim-Chansokpheng',
-    'linux-management-systems',
-    'scripts',
-    'users',
-    'get_user.sh')
-
-export async function GET() {
-  try {
-    const { stdout } = await execPromise(GET_PATH);
-    const users = stdout.trim().split("\n");
-    return NextResponse.json({ users });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
-
-export async function POST(req: Request) {
+export async function PUT(req: Request) {
+  // const scriptPathGet = path.join(
+  //   "/home",
+  //   "long",
+  //   "Documents",
+  //   "ISTAD-Associate",
+  //   "SemesterII",
+  //   "Kim-Chansokpheng",
+  //   "linux-management-systems",
+  //   "scripts",
+  //   "users",
+  //   "get_user.sh"
+  // );
+  const scriptPathUpdate = path.join(
+    "/home",
+    "long",
+    "Documents",
+    "ISTAD-Associate",
+    "SemesterII",
+    "Kim-Chansokpheng",
+    "linux-management-systems",
+    "scripts",
+    "users",
+    "update_user.sh"
+  );
   const { username, newUsername } = await req.json();
 
-  if (!username || !newUsername) {
-    return NextResponse.json({ message: "Invalid data" }, { status: 400 });
+  // Validation
+  if (!username) {
+    return NextResponse.json({ message: "Invalid input" }, { status: 400 });
   }
 
+  // Execute edit
   try {
-    // Be careful with spaces; ideally sanitize username inputs
-    const script = `${SCRIPT_PATH} ${username} ${newUsername}`;
-    const { stdout, stderr } = await execPromise("sudo",[script]);
-
-    if (stderr && stderr.trim().length > 0) {
-      return NextResponse.json({ message: stderr }, { status: 400 });
-    }
+    const { stdout, stderr } = await execPromise("sudo", [
+      scriptPathUpdate,
+      username,
+      newUsername,
+    ]);
+    if (stderr) return NextResponse.json({ message: stderr });
 
     return NextResponse.json({
-      message: stdout.trim() || "User updated successfully",
+      message: stdout || "User update successfully!",
     });
-  } catch (err: any) {
-    return NextResponse.json(
-      { message: err.message || "Internal server error" },
-      { status: 500 }
-    );
+  } catch (error: any) {
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 }
-
