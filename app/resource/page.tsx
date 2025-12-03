@@ -408,7 +408,7 @@ export default function Resources() {
 
         {/* Chart */}
         <div className="bg-white rounded-xl p-6 shadow-md border border-gray-200 mb-10">
-          
+
           <CardHeader>
             <CardTitle>Temperature History</CardTitle>
             <CardDescription className="text-purple-700 mb-6">Second and Minuet Interval Trend</CardDescription>
@@ -432,7 +432,6 @@ export default function Resources() {
               <Tooltip
                 contentStyle={{
                   backgroundColor: '#fff',
-                  border: '1px solid #ggg',
                   borderRadius: '8px'
                 }}
                 labelStyle={{ color: '#2b2b2b' }}
@@ -507,7 +506,6 @@ export default function Resources() {
                   <Tooltip
                     contentStyle={{
                       backgroundColor: '#fff',
-                      border: '1px solid #ggg',
                       borderRadius: '8px'
                     }}
                     labelStyle={{ color: '#2b2b2b' }}
