@@ -10,16 +10,13 @@ export const runtime = "nodejs"; // needed to use child_process
 // ABSOLUTE path to your script on the server
 const SCRIPT_PATH = path.join(
   "/home",
-  "long",
-  "Documents",
-  "ISTAD-Associate",
-  "SemesterII",
-  "Kim-Chansokpheng",
-  "linux-management-systems",
+  "admin",
+  "Linux-management-systems",
   "scripts",
   "users",
   "add_user.sh"
 );
+
 
 const execPromise = promisify(execFile);
 

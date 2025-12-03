@@ -9,13 +9,9 @@ export const runtime = "nodejs"; // needed to use child_process
 
 // ABSOLUTE path to your script on the server
 const SCRIPT_PATH = path.join(
-  "/home",
-  "long",
-  "Documents",
-  "ISTAD-Associate",
-  "SemesterII",
-  "Kim-Chansokpheng",
-  "linux-management-systems",
+"/home",
+  "admin",
+  "Linux-management-systems",
   "scripts",
   "groups",
   "add_group.sh"

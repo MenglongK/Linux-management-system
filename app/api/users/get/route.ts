@@ -7,13 +7,9 @@ import path from "path";
 export async function GET() {
   // Absolute path to your shell script
   const scriptPath = path.join(
-    '/home',
-    'long',
-    'Documents',
-    'ISTAD-Associate',
-    'SemesterII',
-    'Kim-Chansokpheng',
-    'linux-management-systems',
+    "/home",
+    "admin",
+    "Linux-management-systems",
     'scripts',
     'users',
     'get_user.sh'

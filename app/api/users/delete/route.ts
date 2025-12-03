@@ -10,12 +10,8 @@ const execPromise = promisify(execFile);
 // CHANGE THIS to the real path of your script
 const SCRIPT_PATH = path.join(
   "/home",
-  "long",
-  "Documents",
-  "ISTAD-Associate",
-  "SemesterII",
-  "Kim-Chansokpheng",
-  "linux-management-systems",
+  "admin",
+  "Linux-management-systems",
   "scripts",
   "users",
   "delete_user.sh"

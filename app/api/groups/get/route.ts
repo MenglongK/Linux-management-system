@@ -7,16 +7,12 @@ import path from "path";
 export async function GET() {
   // Absolute path to your shell script
   const scriptPath = path.join(
-    '/home',
-    'long',
-    'Documents',
-    'ISTAD-Associate',
-    'SemesterII',
-    'Kim-Chansokpheng',
-    'linux-management-systems',
-    'scripts',
-    'groups',
-    'get_group.sh'
+    "/home",
+    "admin",
+    "Linux-management-systems",
+    "scripts",
+    "groups",
+    "get_group.sh"
   );
 
   console.log("Running script at:", scriptPath);
