@@ -18,6 +18,14 @@ if ! id "$USERNAME" &>/dev/null; then
   echo "❌ User '$USERNAME' not found"
   exit 1
 fi
+# Get UID
+USER_UID=$(id -u "$USERNAME")
+
+# Block root and system accounts and first normal user
+if [[ "$USER_UID" -le 1000 ]]; then
+  echo "Error: Cannot delete root or system accounts and first normal account."
+  exit 1
+fi
 
 # Optional safety check when used interactively
 if [ -t 0 ]; then
