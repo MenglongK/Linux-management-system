@@ -7,15 +7,10 @@ export const runtime = "nodejs"; // needed to use child_process
 
 // const execFileAsync = promisify(execFile);
 
-// ABSOLUTE path to your script on the server
-const SCRIPT_PATH = path.join(
-"/home",
-  "admin",
-  "Linux-management-systems",
-  "scripts",
-  "groups",
-  "add_group.sh"
-);
+const projectRoot = path.resolve("app/api/groups/create", "../../../..");
+
+// Shell script paths
+const SCRIPT_PATH = path.join(projectRoot, "scripts", "groups", "add_group.sh");
 
 const execPromise = promisify(execFile);
 
@@ -27,8 +22,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    // Execute shell script
-    // const script = `${SCRIPT_PATH} ${username} ${password}`;
+    
     const { stdout, stderr } = await execPromise("sudo", [
       SCRIPT_PATH,
       groups,

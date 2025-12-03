@@ -7,15 +7,10 @@ import path from "path";
 export const runtime = "nodejs";
 const execPromise = promisify(execFile);
 
-// CHANGE THIS to the real path of your script
-const SCRIPT_PATH = path.join(
-  "/home",
-  "admin",
-  "Linux-management-systems",
-  "scripts",
-  "users",
-  "delete_user.sh"
-);
+const projectRoot = path.resolve("app/api/users/delete", "../../../..");
+
+// Shell script paths
+const SCRIPT_PATH = path.join(projectRoot, "scripts", "users", "delete_user.sh");
 
 export async function DELETE(req: Request) {
   try {

@@ -5,17 +5,12 @@ import path from "path";
 
 // API route to run the shell script and return the output
 export async function GET() {
-  // Absolute path to your shell script
-  const scriptPath = path.join(
-    "/home",
-    "admin",
-    "Linux-management-systems",
-    "scripts",
-    "groups",
-    "get_group.sh"
-  );
+  const projectRoot = path.resolve("app/api/groups/get", "../../../..");
+  
+  // Shell script paths
+  const SCRIPT_PATH = path.join(projectRoot, "scripts", "groups", "get_group.sh");
 
-  console.log("Running script at:", scriptPath);
+  console.log("Running script at:", SCRIPT_PATH);
 
   const execPromise = (command: string) => {
     return new Promise<string>((resolve, reject) => {

@@ -7,15 +7,10 @@ export const runtime = "nodejs"; // needed to use child_process
 
 // const execFileAsync = promisify(execFile);
 
-// ABSOLUTE path to your script on the server
-const SCRIPT_PATH = path.join(
-  "/home",
-  "admin",
-  "Linux-management-systems",
-  "scripts",
-  "users",
-  "add_user.sh"
-);
+const projectRoot = path.resolve("app/api/users/create", "../../../..");
+
+// Shell script paths
+const SCRIPT_PATH = path.join(projectRoot, "scripts", "users", "add_user.sh");
 
 
 const execPromise = promisify(execFile);
