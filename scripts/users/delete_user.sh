@@ -22,7 +22,7 @@ fi
 USER_UID=$(id -u "$USERNAME")
 
 # Block root and system accounts and first normal user
-if [[ "$USER_UID" -le 1000 ]]; then
+if [[ "$USER_UID" -le 1001 ]]; then
   echo "Error: Cannot delete root or system accounts and first normal account."
   exit 1
 fi
