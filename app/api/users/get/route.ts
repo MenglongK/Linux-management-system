@@ -26,7 +26,7 @@ const SCRIPT_PATH = path.join(projectRoot, "scripts", "users", "get_user.sh");
   };
 
   try {
-    const result = await execPromise(scriptPath);  // Run the shell script
+    const result = await execPromise(SCRIPT_PATH);  // Run the shell script
     console.log("Script result:", result);  // Log the output for debugging
 
     // Mock permissions for each user (since `get_user.sh` doesn't provide permissions)

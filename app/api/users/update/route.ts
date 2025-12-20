@@ -7,30 +7,13 @@ import { promisify } from "util";
 export const runtime = "nodejs";
 const execPromise = promisify(execFile);
 export async function PUT(req: Request) {
-  // const scriptPathGet = path.join(
-  //   "/home",
-  //   "long",
-  //   "Documents",
-  //   "ISTAD-Associate",
-  //   "SemesterII",
-  //   "Kim-Chansokpheng",
-  //   "linux-management-systems",
-  //   "scripts",
-  //   "users",
-  //   "get_user.sh"
-  // );
-  const scriptPathUpdate = path.join(
-    "/home",
-    "long",
-    "Documents",
-    "ISTAD-Associate",
-    "SemesterII",
-    "Kim-Chansokpheng",
-    "linux-management-systems",
-    "scripts",
-    "users",
-    "update_user.sh"
-  );
+
+ const projectRoot = path.resolve("app/api/users/update", "../../../..");
+ 
+ // Shell script paths
+ const SCRIPT_PATH = path.join(projectRoot, "scripts", "users", "update_user.sh");
+ 
+
   const { username, newUsername } = await req.json();
 
   // Validation
@@ -41,7 +24,7 @@ export async function PUT(req: Request) {
   // Execute edit
   try {
     const { stdout, stderr } = await execPromise("sudo", [
-      scriptPathUpdate,
+      SCRIPT_PATH,
       username,
       newUsername,
     ]);

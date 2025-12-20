@@ -80,6 +80,43 @@ export function GroupModal({
       setLoading(false);
     }
   };
+//     const handleDelete = async () => {
+//   if (!group?.name) {
+//     alert("No group selected.");
+//     return;
+//   }
+
+//   if (!confirm(`Are you sure you want to delete group "${group.name}"?`)) {
+//     return;
+//   }
+
+//   setLoading(true);
+
+//   try {
+//     const res = await fetch("/api/groups/delete", {
+//       method: "DELETE",
+//       headers: { "Content-Type": "application/json" },
+//       body: JSON.stringify({ group: group.name }),
+//     });
+
+//     const result = await res.json();
+
+//     if (!res.ok) {
+//       alert(result.error || "Failed to delete group.");
+//     } else {
+//       alert(`Group "${group.name}" deleted successfully.`);
+//       onSave?.(); // Refresh list
+//       close();
+//     }
+//   } catch (e) {
+//     alert("Error deleting group.");
+//   } finally {
+//     setLoading(false);
+//   }
+// };
+
+
+
 
   // const handlePermissionChange = async() => {
 
