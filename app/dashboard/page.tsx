@@ -100,39 +100,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">System Resources</h2>
-          <div className="space-y-3">
-            {resources.map(resource => (
-              <div key={resource.id} className="flex justify-between items-center">
-                <span>{resource.name}</span>
-                <span className="font-medium">{resource.value}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Remote Servers</h2>
-          <div className="space-y-3">
-            {servers.map(server => (
-              <div key={server.id} className="flex justify-between items-center">
-                <div>
-                  <span className="font-medium">{server.name}</span>
-                  <span className="text-sm text-gray-600 ml-2">({server.ip})</span>
-                </div>
-                <span className={`px-2 py-1 rounded-full text-xs ${server.status === 'Online'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
-                  }`}>
-                  {server.status}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div> */}
     </div>
     </div>
   );

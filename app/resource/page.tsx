@@ -2,17 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import {
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   AreaChart,
   Area
 } from "recharts";
+
 import {
   Server,
   Trash2,
@@ -28,15 +26,15 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, } from "@/components/ui/card";
 import { Badge } from "@/components/ui/Badge";
 import { MetricCircle } from "@/components/resources/MetricCircle";
 
-// --- CONFIGURATION ---
 const N8N_URL = process.env.NEXT_PUBLIC_N8N_URL || "https://api.rotana-dev.online/webhook";
 
 export default function Resources() {
-  // --- STATE ---
+
+  const [isMounted, setIsMounted] = useState(false);
+
   const [stats, setStats] = useState({
     cpu: 0, cpu_model: "Loading...", cpu_cores: "0", cpu_temp: "0",
     ram: 0, ram_total: "0GB", ram_used: "0GB",
@@ -51,7 +49,6 @@ export default function Resources() {
   const [killPid, setKillPid] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // --- API CALLS ---
   const fetchUsage = async () => {
     try {
       const res = await fetch(`${N8N_URL}/get-usage`);
@@ -119,41 +116,39 @@ export default function Resources() {
   };
 
   useEffect(() => {
+    setIsMounted(true);
+
     fetchUsage(); fetchProcesses();
     const interval = setInterval(() => { fetchUsage(); fetchProcesses(); }, 3000);
     return () => clearInterval(interval);
   }, []);
 
-  // --- GLASSMORPHISM CLASSES ---
   const glassCard = "bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border border-white/20 dark:border-slate-700/50 shadow-lg rounded-2xl transition-all hover:shadow-xl hover:bg-white/70 dark:hover:bg-slate-900/70";
   const glassInput = "bg-white/50 dark:bg-slate-800/50 border-white/30 dark:border-slate-600/30 backdrop-blur-md focus:bg-white/80 dark:focus:bg-slate-800/80";
 
   return (
-    <div className="min-h-screen font-sans text-slate-800 dark:text-slate-100 p-4 md:p-8 transition-colors duration-500 bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
+    <div className="min-h-screen font-sans text-slate-800 dark:text-slate-100 p-4 md:p-8 transition-colors duration-500 bg-linear-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950">
       
-      {/* MAX WIDTH CONTAINER */}
       <div className="max-w-7xl mx-auto space-y-8">
 
-        {/* HEADER */}
         <header className="flex flex-col md:flex-row justify-between md:items-end gap-4 pb-2 border-b border-slate-200/50 dark:border-slate-700/50">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-extrabold tracking-tight bg-linear-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
               System Monitor
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-2 font-medium">
+            <div className="text-slate-500 dark:text-slate-400 mt-2 flex items-center gap-2 font-medium">
               <Server className="h-4 w-4 text-indigo-500" /> 
               {stats.cpu_model} 
               <Badge variant="outline" className="ml-2 bg-indigo-100/50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border-0">
                 {stats.cpu_cores} Cores
               </Badge>
-            </p>
+            </div>
           </div>
           <div className={`px-4 py-1.5 rounded-full text-xs font-bold shadow-sm backdrop-blur-md border ${loading ? 'bg-yellow-100/80 text-yellow-700 border-yellow-200' : 'bg-emerald-100/80 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800'}`}>
             {loading ? "Connecting..." : "● System Online"}
           </div>
         </header>
 
-        {/* --- HARDWARE CIRCLES GRID --- */}
         <div className={`p-8 ${glassCard}`}>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-12 items-center justify-items-center">
             
@@ -187,10 +182,8 @@ export default function Resources() {
               </div>
             )}
 
-            {/* STORAGE & NET (Linear) */}
             <div className="w-full max-w-xs space-y-8 pl-0 xl:pl-8 xl:border-l border-slate-200 dark:border-slate-700">
               
-              {/* Disk */}
               <div className="group">
                 <div className="flex justify-between mb-2 items-end">
                   <span className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-2">
@@ -199,12 +192,11 @@ export default function Resources() {
                   <span className="text-xl font-light text-slate-800 dark:text-slate-200">{stats.disk}%</span>
                 </div>
                 <div className="w-full bg-slate-200 dark:bg-slate-700 h-2.5 rounded-full overflow-hidden shadow-inner">
-                  <div className="h-full bg-gradient-to-r from-orange-400 to-red-500 transition-all duration-700 ease-out group-hover:brightness-110" style={{ width: `${stats.disk}%` }}></div>
+                  <div className="h-full bg-linear-to-r from-orange-400 to-red-500 transition-all duration-700 ease-out group-hover:brightness-110" style={{ width: `${stats.disk}%` }}></div>
                 </div>
                 <div className="text-[10px] text-slate-400 mt-1 text-right">{stats.disk_used} used</div>
               </div>
 
-              {/* Network */}
               <div>
                 <div className="flex justify-between mb-3">
                   <span className="text-xs font-bold text-slate-500 dark:text-slate-400 flex items-center gap-2">
@@ -227,10 +219,7 @@ export default function Resources() {
           </div>
         </div>
 
-        {/* --- CHARTS & ACTIONS GRID --- */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
-          {/* LIVE CHART */}
           <div className={`lg:col-span-2 p-6 ${glassCard}`}>
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold flex items-center gap-2 text-slate-700 dark:text-slate-200">
@@ -242,35 +231,38 @@ export default function Resources() {
                 {stats.has_gpu && <span className="flex items-center gap-1 text-orange-500"><div className="w-2 h-2 rounded-full bg-orange-500"></div> GPU</span>}
               </div>
             </div>
-            <div className="h-[320px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData}>
-                  <defs>
-                    <linearGradient id="colorCpu" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                    </linearGradient>
-                    <linearGradient id="colorRam" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-200 dark:text-slate-700 opacity-50" />
-                  <XAxis dataKey="time" fontSize={10} stroke="currentColor" className="text-slate-400" tick={{dy: 10}} />
-                  <YAxis domain={[0, 100]} fontSize={10} stroke="currentColor" className="text-slate-400" />
-                  <Tooltip 
-                    contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', backgroundColor: 'rgba(255, 255, 255, 0.9)'}}
-                    itemStyle={{fontSize: '12px', fontWeight: 'bold'}}
-                  />
-                  <Area type="monotone" dataKey="cpu" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorCpu)" />
-                  <Area type="monotone" dataKey="ram" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorRam)" />
-                  {stats.has_gpu && <Area type="monotone" dataKey="gpu" stroke="#f59e0b" strokeWidth={2} fillOpacity={0} />}
-                </AreaChart>
-              </ResponsiveContainer>
+            <div className="h-80 w-full">
+              {isMounted ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={chartData}>
+                    <defs>
+                      <linearGradient id="colorCpu" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                      </linearGradient>
+                      <linearGradient id="colorRam" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="text-slate-200 dark:text-slate-700 opacity-50" />
+                    <XAxis dataKey="time" fontSize={10} stroke="currentColor" className="text-slate-400" tick={{dy: 10}} />
+                    <YAxis domain={[0, 100]} fontSize={10} stroke="currentColor" className="text-slate-400" />
+                    <Tooltip 
+                      contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)', backgroundColor: 'rgba(255, 255, 255, 0.9)'}}
+                      itemStyle={{fontSize: '12px', fontWeight: 'bold'}}
+                    />
+                    <Area type="monotone" dataKey="cpu" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#colorCpu)" />
+                    <Area type="monotone" dataKey="ram" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorRam)" />
+                    {stats.has_gpu && <Area type="monotone" dataKey="gpu" stroke="#f59e0b" strokeWidth={2} fillOpacity={0} />}
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : (
+                 <div className="flex items-center justify-center h-full text-slate-400">Loading Chart...</div>
+              )}
             </div>
           </div>
 
-          {/* CONTROL PANEL */}
           <div className={`p-6 ${glassCard} flex flex-col justify-between`}>
             <div>
               <h3 className="text-lg font-bold mb-1 text-slate-700 dark:text-slate-200">Management</h3>
@@ -291,7 +283,7 @@ export default function Resources() {
                   </Button>
                 </div>
 
-                <div className="h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-700 to-transparent" />
+                <div className="h-px bg-linear-to-r from-transparent via-slate-200 dark:via-slate-700 to-transparent" />
 
                 <div>
                   <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-2 block">Force Stop</label>
@@ -316,7 +308,6 @@ export default function Resources() {
               </div>
             </div>
             
-            {/* Status Footer */}
             <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
                <span className="text-[10px] uppercase font-bold text-slate-300 dark:text-slate-600 tracking-widest">
                  System Secure • Encrypted
@@ -325,7 +316,7 @@ export default function Resources() {
           </div>
         </div>
 
-        {/* --- PROCESS TABLE --- */}
+
         <div className={`overflow-hidden ${glassCard}`}>
           <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
             <h3 className="text-lg font-bold text-slate-700 dark:text-slate-200">Top Processes</h3>

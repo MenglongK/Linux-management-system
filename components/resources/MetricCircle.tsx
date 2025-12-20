@@ -1,4 +1,3 @@
-// --- METRIC CIRCLE COMPONENT (Glassmorphism & Dark Mode) ---
 export function MetricCircle({ 
   label, 
   percentage, 
@@ -35,7 +34,7 @@ export function MetricCircle({
       {/* 2. THE CIRCLE */}
       <div className="relative w-40 h-40 md:w-48 md:h-48 drop-shadow-xl">
         {/* Background Glow (Optional subtle effect) */}
-        <div className="absolute inset-0 bg-gradient-to-tr from-white/0 to-white/0 group-hover:from-white/40 group-hover:to-transparent rounded-full transition-all duration-700 blur-2xl opacity-0 group-hover:opacity-100"></div>
+        <div className="absolute inset-0 bg-linear-to-tr from-white/0 to-white/0 group-hover:from-white/40 group-hover:to-transparent rounded-full transition-all duration-700 blur-2xl opacity-0 group-hover:opacity-100"></div>
 
         <svg className="w-full h-full transform -rotate-90" viewBox="0 0 140 140">
           <defs>
