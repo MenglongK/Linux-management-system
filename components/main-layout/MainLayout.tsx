@@ -74,8 +74,12 @@ export function MainLayout({ children }: { children: React.ReactNode }) {
         <footer className="bg-card border-t border-border px-6 py-4 text-sm text-muted-foreground">
           <div className="flex items-center justify-between">
             <p>&copy; 2025 System Management. All rights reserved.</p>
-            {/* <p>Last updated: {new Date().toLocaleDateString()}</p> */}
-            <p>Last updated: {new Date().toLocaleDateString()}</p>
+            <p>
+              Last updated: 
+              <span suppressHydrationWarning>
+                {new Date().toLocaleDateString()}
+              </span>
+            </p>
           </div>
         </footer>
       </div>
